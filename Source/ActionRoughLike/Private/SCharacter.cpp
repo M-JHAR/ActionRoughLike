@@ -2,11 +2,14 @@
 
 
 #include "SCharacter.h"
+#include "DrawDebugHelpers.h"
+
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -15,36 +18,72 @@ ASCharacter::ASCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
+	SpringArmComp->bUsePawnControlRotation = true;
 	SpringArmComp->SetupAttachment(RootComponent);
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	bUseControllerRotationYaw = false;
 }
 
-void ASCharacter::Move(const FInputActionValue& Value)
+void ASCharacter::MoveForward(const FInputActionValue& Value)
 {
-	const bool bValue = Value.Get<bool>();
 	const float DirectionValue = Value.Get<float>();
 
-	if (bValue)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("IA_Move triggered"));
-	}
 	if (GetController() && DirectionValue != 0)
 	{
-		FVector PlayerForwardVector = GetActorForwardVector();
-		AddMovementInput(PlayerForwardVector, DirectionValue);
+		FRotator ControlRot = GetControlRotation();
+		ControlRot.Pitch = 0;
+		ControlRot.Roll = 0;
+
+		//FVector PlayerForwardVector = GetActorForwardVector();
+		AddMovementInput(ControlRot.Vector(), DirectionValue);
+	}
+
+}
+
+void ASCharacter::MoveRight(const FInputActionValue& Value)
+{
+	const float DirectionValue = Value.Get<float>();
+
+	if (GetController() && DirectionValue != 0)
+	{
+		FRotator ControlRot = GetControlRotation();
+		FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
+
+		//FVector PlayerRightVector = GetActorRightVector();
+		AddMovementInput(RightVector, DirectionValue);
 	}
 }
 
 void ASCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D LookAxisValue = Value.Get<FVector2D>();
+
 	if (GetController())
 	{
 		AddControllerYawInput(LookAxisValue.X);
 		AddControllerPitchInput(LookAxisValue.Y);
 	}
+}
+
+void ASCharacter::PrimaryAttack()
+{
+	if (GetController())
+	{
+		FVector HandLocation= GetMesh()->GetSocketLocation("Muzzle_01");
+
+		FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -64,13 +103,11 @@ void ASCharacter::BeginPlay()
 }
 
 
-
-// Called every frame
+// This is entirely optional, it draws two arrows to visualize rotations of the player
 void ASCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
 }
+
 
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -79,8 +116,10 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &ASCharacter::MoveForward);
+		EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &ASCharacter::MoveRight);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASCharacter::Look);
+		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryAttack);
 	}
 }
 

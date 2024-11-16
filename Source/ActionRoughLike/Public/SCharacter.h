@@ -18,7 +18,9 @@ UCLASS()
 class ACTIONROUGHLIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
+protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -35,20 +37,28 @@ protected:
 	UInputMappingContext* PlayerMapingContext;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* MoveAction;
+	UInputAction* MoveForwardAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* MoveRightAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* LookAction;
-	
 
-	void Move(const FInputActionValue& Value);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* PrimaryAttackAction;
+
+
+
+	void MoveForward(const FInputActionValue& Value);
+	void MoveRight(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-
+	void PrimaryAttack();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	
-public:	
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
