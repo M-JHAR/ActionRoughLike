@@ -12,6 +12,8 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
+class USInteractionComponent;
+class UAnimMontage;
 
 
 UCLASS()
@@ -19,19 +21,18 @@ class ACTIONROUGHLIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Attack)
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
+	UAnimMontage* AttackMove;
+
+	FTimerHandle TimerHande_PrimaryAttack;
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* SpringArmComp;
-
-	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* CameraComp;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* PlayerMapingContext;
@@ -51,12 +52,31 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* JumpAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* InteractAction;
 
+protected:
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere)
+	USInteractionComponent* InteractionComp;
 
 	void MoveForward(const FInputActionValue& Value);
+
 	void MoveRight(const FInputActionValue& Value);
+
 	void Look(const FInputActionValue& Value);
+
 	void PrimaryAttack();
+
+	void PrimaryAttack_TimeElapsed();
+
+	void PrimaryInteract();
+
 	void Jump();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
