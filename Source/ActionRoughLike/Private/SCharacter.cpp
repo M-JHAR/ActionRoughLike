@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SInteractionComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -128,21 +129,50 @@ void ASCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackMove);
 
-	GetWorldTimerManager().SetTimer(TimerHande_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+	GetWorldTimerManager().SetTimer(TimerHanlde_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
 }
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
 	if (GetController())
 	{
+
+
+		FCollisionObjectQueryParams ObjectQueryParams;
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+
+		TArray<FHitResult> Hits;
+
+		FVector Start = CameraComp->GetComponentLocation();
+		FVector End = Start + CameraComp->GetForwardVector() * 1500.0f;
+		FVector Target = End;
+
+		GetWorld()->LineTraceMultiByObjectType(Hits, Start, End, ObjectQueryParams);
+
+		//DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2.0f, 0, 0.5f);
+
+
+
+		for (FHitResult Hit : Hits)
+		{
+			if (AActor* ActorHit = Hit.GetActor())
+			{
+				Target = Hit.ImpactPoint;
+				break;
+			}
+		}
+
 		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-		FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+		FRotator ProjectileRot = UKismetMathLibrary::FindLookAtRotation(HandLocation, Target);
 
-		//FTransform SpawnTM = FTransform(HandDir HandLocation);
+		FTransform SpawnTM = FTransform(ProjectileRot, HandLocation);
+
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
 
 		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 	}

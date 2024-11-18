@@ -27,7 +27,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Attack)
 	UAnimMontage* AttackMove;
 
-	FTimerHandle TimerHande_PrimaryAttack;
+	FTimerHandle TimerHanlde_PrimaryAttack;
 public:
 	// Sets default values for this character's properties
 	ASCharacter();

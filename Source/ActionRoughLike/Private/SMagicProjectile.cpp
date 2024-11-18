@@ -20,9 +20,11 @@ ASMagicProjectile::ASMagicProjectile()
 	EffectComp->SetupAttachment(SphereComp);
 
 	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
-	MovementComp->InitialSpeed = 1000.0f;
+	MovementComp->InitialSpeed = 2000.0f;
+	MovementComp->ProjectileGravityScale = 0;
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
+
 }
 
 // Called when the game starts or when spawned
