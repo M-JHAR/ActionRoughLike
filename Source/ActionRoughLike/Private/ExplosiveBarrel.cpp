@@ -4,6 +4,8 @@
 #include "ExplosiveBarrel.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "SAttributeComponent.h"
+#include "SMagicProjectile.h"
 // Sets default values
 AExplosiveBarrel::AExplosiveBarrel()
 {
@@ -40,8 +42,22 @@ void AExplosiveBarrel::PostInitializeComponents()
 
 void AExplosiveBarrel::StartExplosive(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (OtherActor)
+	{
+		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		if (AttributeComp)
+		{
+			AttributeComp->ApplyHealthChange(-50.0f);
+			RadialForceComp->FireImpulse();
+		}
+
+		ASMagicProjectile* MagicProjectile = Cast<ASMagicProjectile>(OtherActor);
+		if (MagicProjectile)
+		{
+			RadialForceComp->FireImpulse();
+		}
+	}
 	
-	RadialForceComp->FireImpulse();
 }
 
 // Called every frame

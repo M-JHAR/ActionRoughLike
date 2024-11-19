@@ -15,6 +15,7 @@ class UInputMappingContext;
 class USInteractionComponent;
 class UAnimMontage;
 class UParticleSystem;
+class USAttributeComponent;
 
 
 UCLASS()
@@ -85,6 +86,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USInteractionComponent* InteractionComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	USAttributeComponent* AttributeComp;
+
 	void MoveForward(const FInputActionValue& Value);
 
 	void MoveRight(const FInputActionValue& Value);
@@ -109,7 +113,7 @@ protected:
 	void SpawnActorLineTrace(const TSubclassOf<AActor>& ToSpawnClass);
 
 	void Jump();
-	
+
 	virtual void BeginPlay() override;
 
 
