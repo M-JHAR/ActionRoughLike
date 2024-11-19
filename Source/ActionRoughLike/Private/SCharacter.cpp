@@ -12,6 +12,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SInteractionComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/SphereComponent.h"
+#include "Components/SceneComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -61,8 +65,12 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &ASCharacter::MoveForward);
 		EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &ASCharacter::MoveRight);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASCharacter::Look);
-		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryAttack);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASCharacter::Jump);
+
+		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryAttack);
+		EnhancedInputComponent->BindAction(BlackholeAttackAction, ETriggerEvent::Triggered, this, &ASCharacter::BlackholeAttack);
+		EnhancedInputComponent->BindAction(TeleportAction, ETriggerEvent::Triggered, this, &ASCharacter::Teleport);
+
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryInteract);
 	}
 }
@@ -134,27 +142,57 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
+	SpawnActorLineTrace(ProjectileClass);
+}
+
+void ASCharacter::BlackholeAttack()
+{
+	PlayAnimMontage(AttackMove);
+
+	GetWorldTimerManager().SetTimer(TimerHanlde_BlackholeAttack, this, &ASCharacter::BlackholeAttack_TimeElapsed, 0.2f);
+}
+
+void ASCharacter::BlackholeAttack_TimeElapsed()
+{
+	SpawnActorLineTrace(BlackholeClass);
+}
+
+void ASCharacter::Teleport()
+{
+	PlayAnimMontage(AttackMove);
+
+	GetWorldTimerManager().SetTimer(TimerHanlde_Teleport, this, &ASCharacter::SpawnTeleport_TimeElapsed, 0.2f);
+}
+
+void ASCharacter::SpawnTeleport_TimeElapsed()
+{
+	SpawnActorLineTrace(TeleportClass);
+}
+
+// This is entirely optional, it draws two arrows to visualize rotations of the player
+void ASCharacter::Tick(float DeltaTime)
+{
+
+}
+
+
+void ASCharacter::SpawnActorLineTrace(const TSubclassOf<AActor>& ToSpawnClass)
+{
 	if (GetController())
 	{
+		TArray<FHitResult> Hits;
 
+		FVector Start = CameraComp->GetComponentLocation();
+		FVector End = Start + CameraComp->GetForwardVector() * 4000.0f;
+		FVector Target = End;
 
 		FCollisionObjectQueryParams ObjectQueryParams;
 		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
 		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
-		TArray<FHitResult> Hits;
-
-		FVector Start = CameraComp->GetComponentLocation();
-		FVector End = Start + CameraComp->GetForwardVector() * 1500.0f;
-		FVector Target = End;
-
 		GetWorld()->LineTraceMultiByObjectType(Hits, Start, End, ObjectQueryParams);
 
-		//DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2.0f, 0, 0.5f);
-
-
-
-		for (FHitResult Hit : Hits)
+		for (const FHitResult& Hit : Hits)
 		{
 			if (AActor* ActorHit = Hit.GetActor())
 			{
@@ -174,13 +212,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParams.Instigator = this;
 
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+		GetWorld()->SpawnActor<AActor>(ToSpawnClass, SpawnTM, SpawnParams);
 	}
-}
-
-// This is entirely optional, it draws two arrows to visualize rotations of the player
-void ASCharacter::Tick(float DeltaTime)
-{
 
 }
-

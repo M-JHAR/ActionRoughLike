@@ -14,20 +14,34 @@ class UInputAction;
 class UInputMappingContext;
 class USInteractionComponent;
 class UAnimMontage;
+class UParticleSystem;
 
 
 UCLASS()
 class ACTIONROUGHLIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
 protected:
+
 	UPROPERTY(EditAnywhere, Category = Attack)
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
+	TSubclassOf<AActor> BlackholeClass;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
+	TSubclassOf<AActor> TeleportClass;
 
 	UPROPERTY(EditAnywhere, Category = Attack)
 	UAnimMontage* AttackMove;
 
 	FTimerHandle TimerHanlde_PrimaryAttack;
+
+	FTimerHandle TimerHanlde_BlackholeAttack;
+
+	FTimerHandle TimerHanlde_Teleport;
+
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -48,6 +62,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* PrimaryAttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* BlackholeAttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* TeleportAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* JumpAction;
@@ -73,12 +93,23 @@ protected:
 
 	void PrimaryAttack();
 
+
 	void PrimaryAttack_TimeElapsed();
+
+	void BlackholeAttack();
+
+	void BlackholeAttack_TimeElapsed();
+
+	void Teleport();
+
+	void SpawnTeleport_TimeElapsed();
 
 	void PrimaryInteract();
 
+	void SpawnActorLineTrace(const TSubclassOf<AActor>& ToSpawnClass);
+
 	void Jump();
-	// Called when the game starts or when spawned
+	
 	virtual void BeginPlay() override;
 
 

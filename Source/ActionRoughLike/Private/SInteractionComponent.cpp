@@ -62,7 +62,7 @@ void USInteractionComponent::PrimaryInteract()
 
 	FColor LineColor = bHit ? FColor::Green : FColor::Red;
 	
-	for (FHitResult Hit : Hits)
+	for (const FHitResult& Hit : Hits)
 	{
 		if (AActor* HitActor = Hit.GetActor())
 		{
@@ -75,13 +75,13 @@ void USInteractionComponent::PrimaryInteract()
 			}
 		}
 
-		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f, 0, 4.0f);
-		DrawDebugSphere(GetWorld(), Hit.Location, Radius, 32, FColor::Yellow, false, 2.0f, 0, 4.0f);
+		//DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f, 0, 4.0f);
+		//DrawDebugSphere(GetWorld(), Hit.Location, Radius, 32, FColor::Yellow, false, 2.0f, 0, 4.0f);
 		
 	}
 	
 	
-	DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 4.0f);
+	//DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 4.0f);
 }
 
 
