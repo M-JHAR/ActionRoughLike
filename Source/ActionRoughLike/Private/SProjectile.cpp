@@ -5,11 +5,11 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "UObject/FastReferenceCollector.h"
+#include "Kismet/GameplayStatics.h"
 
 ASProjectile::ASProjectile()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Projectile");
 	RootComponent = SphereComp;
@@ -18,23 +18,31 @@ ASProjectile::ASProjectile()
 	EffectComp->SetupAttachment(SphereComp);
 
 	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
-	MovementComp->InitialSpeed = 2000.0f;
-	MovementComp->ProjectileGravityScale = 0;
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
+	MovementComp->ProjectileGravityScale = 0;
+	MovementComp->InitialSpeed = 8000.0f;
 }
 
-// Called when the game starts or when spawned
-void ASProjectile::BeginPlay()
+
+void ASProjectile::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
+	SphereComp->OnComponentHit.AddDynamic(this, &ASProjectile::OnActorHit);
 }
 
-// Called every frame
-void ASProjectile::Tick(float DeltaTime)
+
+void ASProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::Tick(DeltaTime);
-
+	Explode();
 }
 
+void ASProjectile::Explode_Implementation()
+{
+	if (ensure(!IsEliminatingGarbage(EGCOptions::None)))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorTransform());
+
+		Destroy();
+	}
+}

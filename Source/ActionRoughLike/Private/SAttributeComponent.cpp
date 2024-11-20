@@ -12,7 +12,7 @@ USAttributeComponent::USAttributeComponent()
 bool USAttributeComponent::ApplyHealthChange(float Delta)
 {
 	Health += Delta;
-	UE_LOG(LogTemp, Warning, TEXT("An Actor's name is %f"), Health);
+	UE_LOG(LogTemp, Warning, TEXT("New Health is :%f"), Health);
 
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
 

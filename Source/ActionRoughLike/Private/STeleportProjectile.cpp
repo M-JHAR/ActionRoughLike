@@ -8,96 +8,53 @@
 
 #include "Particles/ParticleSystem.h"
 #include "Kismet/GameplayStatics.h"
-
-
+#include "UObject/FastReferenceCollector.h"
 
 ASTeleportProjectile::ASTeleportProjectile()
 {
-	PrimaryActorTick.bCanEverTick = true;
 
-	MovementComp->InitialSpeed = 2000.0f;
+	TeleportDelay = 0.2f;
+	DetonateDelay = 0.2f;
+
+	MovementComp->InitialSpeed = 6000.0f;
 
 
-}
-
-void ASTeleportProjectile::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	SphereComp->OnComponentHit.AddDynamic(this, &ASTeleportProjectile::OnHit);
 }
 
 void ASTeleportProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Delay
-	if (bOnHit) return;
-	GetWorldTimerManager().SetTimer(TimerHande_TeleportProjectile, this, &ASTeleportProjectile::WaitEffectToComplete_TimeElapsed, 0.4f);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EnterTeleportEffect, GetInstigator()->GetActorTransform());
 
-
+	GetWorldTimerManager().SetTimer(TimerHande_DelayedDetonate, this, &ASTeleportProjectile::Explode, DetonateDelay);
 
 }
 
-void ASTeleportProjectile::WaitEffectToComplete_TimeElapsed()
+void ASTeleportProjectile::Explode_Implementation()
 {
-	if (bOnHit) return;
+	GetWorldTimerManager().ClearTimer(TimerHande_DelayedDetonate);
 
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExitTeleportEffect, GetActorTransform(), true);
-	MovementComp->Deactivate();
-	EffectComp->Deactivate();
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorTransform());
 
-	if (AActor* MyPlayer = GetInstigator())
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EnterTeleportEffect, MyPlayer->GetActorTransform(), true);
-	//Delay
-	GetWorldTimerManager().SetTimer(TimerHande_TeleportProjectile, this, &ASTeleportProjectile::DoTeleport_TimeElapsed, 0.25f);
+	EffectComp->DeactivateSystem();
 
+	MovementComp->StopMovementImmediately();
+	SetActorEnableCollision(false);
 
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EnterTeleportEffect, GetActorTransform());
+
+	FTimerHandle TimerHande_DelayedTeleport;
+	GetWorldTimerManager().SetTimer(TimerHande_DelayedTeleport, this, &ASTeleportProjectile::TeleportInstigator, TeleportDelay);
 }
 
-void ASTeleportProjectile::DoTeleport_TimeElapsed()
+void ASTeleportProjectile::TeleportInstigator()
 {
-	if (bOnHit) return;
+	AActor* ActorToTeleport = GetInstigator();
+	if (ensure(ActorToTeleport))
+	{
+		ActorToTeleport->TeleportTo(GetActorLocation(), ActorToTeleport->GetActorRotation(), false, false);
 
-	AActor* MyPlayer = GetInstigator();
-	if (!MyPlayer) return;
-
-	FVector ProjectileLoc = GetActorLocation();
-	FRotator ProjectileRot = GetActorRotation();
-
-
-	MyPlayer->TeleportTo(ProjectileLoc, ProjectileRot);
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExitTeleportEffect, GetActorTransform(), true);
-
-	Destroy();
-}
-
-void ASTeleportProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	AActor* MyPlayer = GetInstigator();
-	if (!MyPlayer) return;
-
-	if (OtherActor == MyPlayer) return;
-
-	bOnHit = true;
-
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExitTeleportEffect, GetActorTransform(), true);
-	MovementComp->Deactivate();
-	EffectComp->Deactivate();
-
-
-	FVector ProjectileLoc = GetActorLocation();
-	FRotator ProjectileRot = GetActorRotation();
-
-
-	FVector UpVec = MyPlayer->GetActorUpVector() * 50;
-
-	FTransform ProjectileTransform = FTransform(ProjectileRot, ProjectileLoc + UpVec);
-
-	MyPlayer->SetActorTransform(ProjectileTransform, false ,nullptr,ETeleportType::TeleportPhysics);
-
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExitTeleportEffect, GetActorTransform(), true);
-
-	Destroy();
-
+		Destroy();
+	}
 }

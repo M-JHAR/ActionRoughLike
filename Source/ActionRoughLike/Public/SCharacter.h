@@ -106,11 +106,11 @@ protected:
 
 	void Teleport();
 
-	void SpawnTeleport_TimeElapsed();
+	void Teleport_TimeElapsed();
 
 	void PrimaryInteract();
 
-	void SpawnActorLineTrace(const TSubclassOf<AActor>& ToSpawnClass);
+	void SpawnProjectile(const TSubclassOf<AActor>& ToSpawnClass);
 
 	void Jump();
 

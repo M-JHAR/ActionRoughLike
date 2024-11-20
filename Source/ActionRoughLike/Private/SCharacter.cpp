@@ -121,10 +121,8 @@ void ASCharacter::Look(const FInputActionValue& Value)
 
 void ASCharacter::Jump()
 {
-	if (!GetController())
-	{
-		return;
-	}
+	if (!GetController()) return;
+
 	this->ACharacter::Jump();
 
 }
@@ -144,7 +142,7 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	SpawnActorLineTrace(ProjectileClass);
+	SpawnProjectile(ProjectileClass);
 }
 
 void ASCharacter::BlackholeAttack()
@@ -156,65 +154,67 @@ void ASCharacter::BlackholeAttack()
 
 void ASCharacter::BlackholeAttack_TimeElapsed()
 {
-	SpawnActorLineTrace(BlackholeClass);
+	SpawnProjectile(BlackholeClass);
 }
 
 void ASCharacter::Teleport()
 {
 	PlayAnimMontage(AttackMove);
 
-	GetWorldTimerManager().SetTimer(TimerHanlde_Teleport, this, &ASCharacter::SpawnTeleport_TimeElapsed, 0.2f);
+	GetWorldTimerManager().SetTimer(TimerHanlde_Teleport, this, &ASCharacter::Teleport_TimeElapsed, 0.2f);
 }
 
-void ASCharacter::SpawnTeleport_TimeElapsed()
+void ASCharacter::Teleport_TimeElapsed()
 {
-	SpawnActorLineTrace(TeleportClass);
+	SpawnProjectile(TeleportClass);
 }
 
-// This is entirely optional, it draws two arrows to visualize rotations of the player
 void ASCharacter::Tick(float DeltaTime)
 {
-
+	Super::Tick(DeltaTime);
 }
 
 
-void ASCharacter::SpawnActorLineTrace(const TSubclassOf<AActor>& ToSpawnClass)
+void ASCharacter::SpawnProjectile(const TSubclassOf<AActor>& ClassToSpawn)
 {
-	if (GetController())
+	if (ensureAlways(ClassToSpawn))
 	{
-		TArray<FHitResult> Hits;
-
-		FVector Start = CameraComp->GetComponentLocation();
-		FVector End = Start + CameraComp->GetForwardVector() * 4000.0f;
-		FVector Target = End;
-
-		FCollisionObjectQueryParams ObjectQueryParams;
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-
-		GetWorld()->LineTraceMultiByObjectType(Hits, Start, End, ObjectQueryParams);
-
-		for (const FHitResult& Hit : Hits)
-		{
-			if (AActor* ActorHit = Hit.GetActor())
-			{
-				Target = Hit.ImpactPoint;
-				break;
-			}
-		}
-
 		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-		FRotator ProjectileRot = UKismetMathLibrary::FindLookAtRotation(HandLocation, Target);
-
-		FTransform SpawnTM = FTransform(ProjectileRot, HandLocation);
-
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParams.Instigator = this;
 
-		GetWorld()->SpawnActor<AActor>(ToSpawnClass, SpawnTM, SpawnParams);
-	}
+		FCollisionShape Shape;
+		Shape.SetSphere(20.0f);
 
+		//	Ignore Player
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+
+		FCollisionObjectQueryParams ObjParams;
+		ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		ObjParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		ObjParams.AddObjectTypesToQuery(ECC_PhysicsBody);
+		ObjParams.AddObjectTypesToQuery(ECC_Pawn);
+
+		FVector TraceStart = CameraComp->GetComponentLocation();
+
+		FVector TraceEnd = TraceStart + (GetControlRotation().Vector() * 5000.0f);
+
+		FHitResult Hit;
+		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjParams, Shape, Params))
+		{
+			TraceEnd = Hit.ImpactPoint;
+		}
+
+
+		//FRotator ProjRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TraceEnd);
+		FRotator ProjRotation = FRotationMatrix::MakeFromX(TraceEnd - HandLocation).Rotator();
+
+		FTransform SpawnTM = FTransform(ProjRotation, HandLocation);
+		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
+
+
+	}
 }

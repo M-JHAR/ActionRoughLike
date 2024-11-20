@@ -15,37 +15,30 @@ class ACTIONROUGHLIKE_API ASTeleportProjectile : public ASProjectile
 	GENERATED_BODY()
 
 protected:
-	bool bOnHit;
 
-	FTimerHandle TimerHande_TeleportProjectile;
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	float TeleportDelay;
 
-	UPROPERTY(EditAnywhere);
-	UParticleSystem* ExitTeleportEffect;
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	float DetonateDelay;
 
-	UPROPERTY(EditAnywhere);
+	UPROPERTY(EditDefaultsOnly, Category = "Effects");
 	UParticleSystem* EnterTeleportEffect;
+
+	FTimerHandle TimerHande_DelayedDetonate;
 
 
 protected:
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	virtual void Explode_Implementation() override;
 
-	void DoTeleport_TimeElapsed();
-
-	void WaitEffectToComplete_TimeElapsed();
-
+	void TeleportInstigator();
 
 	virtual void BeginPlay() override;
-
-	virtual void PostInitializeComponents() override;
-
 
 public:
 
 	ASTeleportProjectile();
-
-	
 
 	
 };
