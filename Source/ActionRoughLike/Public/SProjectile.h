@@ -43,7 +43,4 @@ public:
 
 	ASProjectile();
 
-protected:
-
-
 };

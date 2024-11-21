@@ -16,22 +16,30 @@ UCLASS()
 class ACTIONROUGHLIKE_API ASBlackholeProjectile : public ASProjectile
 {
 	GENERATED_BODY()
+
 protected:
+	
+	UPROPERTY(EditDefaultsOnly)
+	float ProjLifeDuration;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	URadialForceComponent* RadialComp;
 
-
-public:	
-	// Sets default values for this actor's properties
-	ASBlackholeProjectile();
+	FTimerHandle TimerHande_DelayedLifeSpan;
 
 protected:
-	// Called when the game starts or when spawned
+
+	UFUNCTION()
+	void OnActorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	virtual void BeginPlay() override;
+	
+	virtual void PostInitializeComponents() override;
+
+	void DestroyActor_FinishedLifeSpan();
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
+	ASBlackholeProjectile();
 
 };

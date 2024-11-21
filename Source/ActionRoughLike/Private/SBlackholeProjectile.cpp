@@ -5,32 +5,45 @@
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "SProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ASBlackholeProjectile::ASBlackholeProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	ProjLifeDuration = 5.0f;
 
 	MovementComp->InitialSpeed = 1000.0f;
 
 	RadialComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialComp"));
 	RadialComp->SetupAttachment(RootComponent);
-
-
 }
 
-// Called when the game starts or when spawned
+void ASBlackholeProjectile::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASBlackholeProjectile::OnActorBeginOverlap);
+}
+
 void ASBlackholeProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	GetWorldTimerManager().SetTimer(TimerHande_DelayedLifeSpan, this, &ASBlackholeProjectile::DestroyActor_FinishedLifeSpan, ProjLifeDuration);
 }
 
-// Called every frame
-void ASBlackholeProjectile::Tick(float DeltaTime)
+void ASBlackholeProjectile::DestroyActor_FinishedLifeSpan()
 {
-	Super::Tick(DeltaTime);
-
+	Destroy();
 }
 
+void ASBlackholeProjectile::OnActorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (ensure(OtherActor))
+	{
+		if (OtherComp->IsSimulatingPhysics())
+		{
+			OtherActor->Destroy();
+		}
+	}
+}
