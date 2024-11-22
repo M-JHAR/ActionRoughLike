@@ -25,7 +25,13 @@ void ASTeleportProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EnterTeleportEffect, GetInstigator()->GetActorTransform());
+	//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EnterTeleportEffect, GetInstigator()->GetActorTransform());
+	
+	APawn* MyPawn = GetInstigator();
+	FVector PlayerLoc = MyPawn->GetActorLocation();
+	FRotator PlayerRot = MyPawn->GetActorRotation();
+
+	UGameplayStatics::SpawnEmitterAttached(EnterTeleportEffect, MyPawn->GetRootComponent(), NAME_None,PlayerLoc,PlayerRot, EAttachLocation::Type::KeepWorldPosition);
 
 	GetWorldTimerManager().SetTimer(TimerHande_DelayedDetonate, this, &ASTeleportProjectile::Explode, DetonateDelay);
 

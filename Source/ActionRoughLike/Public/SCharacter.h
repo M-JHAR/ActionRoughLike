@@ -114,8 +114,12 @@ protected:
 
 	void Jump();
 
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+
 	virtual void BeginPlay() override;
 
+	virtual void PostInitializeComponents() override;
 
 public:
 	// Called every frame

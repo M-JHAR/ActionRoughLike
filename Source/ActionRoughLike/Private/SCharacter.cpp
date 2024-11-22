@@ -57,6 +57,13 @@ void ASCharacter::BeginPlay()
 }
 
 
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+}
+
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -200,7 +207,8 @@ void ASCharacter::SpawnProjectile(const TSubclassOf<AActor>& ClassToSpawn)
 
 		FVector TraceStart = CameraComp->GetComponentLocation();
 
-		FVector TraceEnd = TraceStart + (GetControlRotation().Vector() * 5000.0f);
+		//FVector TraceEnd = TraceStart + (GetControlRotation().Vector() * 5000.0f);
+		FVector TraceEnd = TraceStart + (CameraComp->GetForwardVector() * 5000.0f);
 
 		FHitResult Hit;
 		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjParams, Shape, Params))
@@ -216,5 +224,34 @@ void ASCharacter::SpawnProjectile(const TSubclassOf<AActor>& ClassToSpawn)
 		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
 
 
+	}
+}
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	// Nerfs - dmg etc
+	if (Delta < 0.0f)
+	{
+		UMeshComponent* MeshComp = Cast<UMeshComponent>(GetComponentByClass(UMeshComponent::StaticClass()));
+		MeshComp->SetScalarParameterValueOnMaterials("TimeHit", GetWorld()->TimeSeconds);
+
+		FVector RedColor = FVector(255, 0, 0);
+		MeshComp->SetVectorParameterValueOnMaterials("HitColor", RedColor);
+	}
+	// Bufs - heal etc
+	else
+	{
+		UMeshComponent* MeshComp = Cast<UMeshComponent>(GetComponentByClass(UMeshComponent::StaticClass()));
+		MeshComp->SetScalarParameterValueOnMaterials("TimeHit", GetWorld()->TimeSeconds);
+
+		FVector GreenColor = FVector(0, 255, 0);
+		MeshComp->SetVectorParameterValueOnMaterials("HitColor", GreenColor);
+
+	}
+
+	if (NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
 	}
 }
