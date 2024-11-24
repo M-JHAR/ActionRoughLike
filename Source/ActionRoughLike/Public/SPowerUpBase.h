@@ -8,7 +8,6 @@
 #include "SPowerUpBase.generated.h"
 
 
-class UStaticMeshComponent;
 class USphereComponent;
 
 UCLASS(ABSTRACT)
@@ -18,11 +17,24 @@ class ACTIONROUGHLIKE_API ASPowerUpBase : public AActor, public ISGameplayInterf
 
 protected:
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* MeshComp;
+	UPROPERTY(EditAnywhere, Category = "PowerUp");
+	float RespawnTime;
+
+	FTimerHandle TimerHande_RespawnTimer;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USphereComponent* SphereComp;
+
+	UFUNCTION()
+	void ShowPowerUp();
+
+	void HideAndCooldownPowerUp();
+
+	void SetPowerUpState(bool bNewIsActive);
+
+public:
+
+	void Interact_Implementation(APawn* InstigatorPawn) override;
 
 public:	
 	ASPowerUpBase();

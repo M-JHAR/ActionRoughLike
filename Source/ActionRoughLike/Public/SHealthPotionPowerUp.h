@@ -14,24 +14,15 @@ class ACTIONROUGHLIKE_API ASHealthPotionPowerUp : public ASPowerUpBase
 {
 	GENERATED_BODY()
 	
-
 protected:
 
-	FTimerHandle TimerHande_ItemUsed;
-
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere, Category = "PowerUp")
 	float HealAmount;
 
-	UPROPERTY(EditDefaultsOnly)
-	float ReUseTime;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UStaticMeshComponent* MeshComp;
 
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
-
-	void ReactiveItem_TimeElapsed();
-
-	void DeactiveActorComponents();
-
-	void ReactiveActorComponents();
 
 public:
 

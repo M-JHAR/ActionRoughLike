@@ -10,8 +10,11 @@ ASHealthPotionPowerUp::ASHealthPotionPowerUp()
 {
 	HealAmount = 20.0f;
 
-	ReUseTime = 10.0f;
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
 
+	// we use sphere collision to handle interactive queries
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MeshComp->SetupAttachment(RootComponent);
 }
 
 
@@ -21,38 +24,15 @@ void ASHealthPotionPowerUp::Interact_Implementation(APawn* InstigatorPawn)
 	{
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
 
-		if (AttributeComp->GetHealh() < 100.0f)
+		if (ensure(AttributeComp) && !AttributeComp->IsMaxHealth())
 		{
-			AttributeComp->ApplyHealthChange(HealAmount);
-
-			DeactiveActorComponents();
-			GetWorldTimerManager().SetTimer(TimerHande_ItemUsed, this, &ASHealthPotionPowerUp::ReactiveItem_TimeElapsed, ReUseTime);
+			
+			if (AttributeComp->ApplyHealthChange(HealAmount))
+			{
+				HideAndCooldownPowerUp();
+			}
 		}
 	}
 }
-
-void ASHealthPotionPowerUp::DeactiveActorComponents()
-{
-	SphereComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetVisibility(false);
-}
-
-
-void ASHealthPotionPowerUp::ReactiveItem_TimeElapsed()
-{
-	ReactiveActorComponents();
-}
-
-void ASHealthPotionPowerUp::ReactiveActorComponents()
-{
-	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MeshComp->SetVisibility(true);
-}
-
-
 
 

@@ -2,32 +2,40 @@
 
 
 #include "SPowerUpBase.h"
-#include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 
 
 // Sets default values
 ASPowerUpBase::ASPowerUpBase()
 {
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-	RootComponent = MeshComp;
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
-	SphereComp->SetupAttachment(MeshComp);
-	
+	SphereComp->SetCollisionProfileName("Powerup");
+	RootComponent = SphereComp;
+
+	RespawnTime = 10.0f;
+
+}
+void ASPowerUpBase::Interact_Implementation(APawn* InstigatorPawn)
+{
+	// logic in derivved classes
 }
 
-//void ASPowerUpBase::Interact_Implementation(APawn* InstigatorPawn)
-//{
-//	if (ensure(InstigatorPawn))
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("Hello World"));
-//
-//	}
-//	
-//}
-//
-//void ASPowerUpBase::UsePowerUp()
-//{
-//
-//}
+void ASPowerUpBase::ShowPowerUp()
+{
+	SetPowerUpState(true);
+}
+
+void ASPowerUpBase::HideAndCooldownPowerUp()
+{
+	SetPowerUpState(false);
+
+	GetWorldTimerManager().SetTimer(TimerHande_RespawnTimer, this, &ASPowerUpBase::ShowPowerUp, RespawnTime);
+}
+
+void ASPowerUpBase::SetPowerUpState(bool bNewIsActive)
+{
+	SetActorEnableCollision(bNewIsActive);
+
+	RootComponent->SetVisibility(bNewIsActive, true);
+}
