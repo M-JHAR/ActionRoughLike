@@ -28,23 +28,24 @@ void ASMagicProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	APawn* MyPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	
-	if (MyPawn == GetInstigator())
+	if (ensure(MyPawn))
 	{
-		ACharacter* MyPlayer = Cast<ACharacter>(MyPawn);
+		if (MyPawn == GetInstigator())
+		{
+			ACharacter* MyPlayer = Cast<ACharacter>(MyPawn);
 
-		FVector HandLocation = MyPlayer->GetMesh()->GetSocketLocation("Muzzle_01");
-		FRotator HandRotation = MyPlayer->GetMesh()->GetSocketRotation("Muzzle_01");
+			FVector HandLocation = MyPlayer->GetMesh()->GetSocketLocation("Muzzle_01");
+			FRotator HandRotation = MyPlayer->GetMesh()->GetSocketRotation("Muzzle_01");
 
-		UGameplayStatics::SpawnEmitterAttached(MuzzleFlashVFX, MyPlayer->GetRootComponent(), NAME_None, HandLocation, HandRotation, EAttachLocation::Type::KeepWorldPosition);
+			UGameplayStatics::SpawnEmitterAttached(MuzzleFlashVFX, MyPlayer->GetRootComponent(), NAME_None, HandLocation, HandRotation, EAttachLocation::Type::KeepWorldPosition);
 
-		FVector PlayerLocation = MyPlayer->GetActorLocation();
-		UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeClass, PlayerLocation, 0.0f, 2000.0f);
+			FVector PlayerLocation = MyPlayer->GetActorLocation();
+			UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeClass, PlayerLocation, 0.0f, 2000.0f);
 
 
-		//DrawDebugSphere(GetWorld(), PlayerLocation, 2000.0f,16,FColor::Green,false,10,0,2);
+			//DrawDebugSphere(GetWorld(), PlayerLocation, 2000.0f,16,FColor::Green,false,10,0,2);
+		}
 	}
-
 }
 
 // Execute OnActorHit 
