@@ -17,12 +17,10 @@ class ACTIONROUGHLIKE_API ASPowerUpBase : public AActor, public ISGameplayInterf
 
 protected:
 	
-	UPROPERTY(EditAnywhere, Category = "PowerUp");
+	UPROPERTY(EditAnywhere, Category = "Powerup");
 	float RespawnTime;
-
-	FTimerHandle TimerHande_RespawnTimer;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USphereComponent* SphereComp;
 
 	UFUNCTION()
@@ -37,6 +35,7 @@ public:
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 
 public:	
+
 	ASPowerUpBase();
 
 };

@@ -6,9 +6,8 @@
 #include "SPowerUpBase.h"
 #include "SHealthPotionPowerUp.generated.h"
 
-/**
- * 
- */
+class UStaticMeshComponent;
+
 UCLASS()
 class ACTIONROUGHLIKE_API ASHealthPotionPowerUp : public ASPowerUpBase
 {
@@ -22,7 +21,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* MeshComp;
 
-	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
+	void Interact_Implementation(APawn* InstigatorPawn) override;
 
 public:
 

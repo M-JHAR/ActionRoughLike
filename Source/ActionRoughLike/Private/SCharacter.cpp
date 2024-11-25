@@ -38,6 +38,11 @@ ASCharacter::ASCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
+
+
+	AttackAnimDelay = 0.2f;
+	TimeToHitParamName = "TimeHit";
+	HandSocketName = "Muzzle_01";
 }
 
 // Called when the game starts or when spawned
@@ -142,7 +147,7 @@ void ASCharacter::PrimaryInteract()
 
 void ASCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(AttackMove);
+	StartAttackEffect();
 
 	GetWorldTimerManager().SetTimer(TimerHanlde_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
 }
@@ -154,7 +159,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 
 void ASCharacter::BlackholeAttack()
 {
-	PlayAnimMontage(AttackMove);
+	StartAttackEffect();
 
 	GetWorldTimerManager().SetTimer(TimerHanlde_BlackholeAttack, this, &ASCharacter::BlackholeAttack_TimeElapsed, 0.2f);
 }
@@ -166,7 +171,7 @@ void ASCharacter::BlackholeAttack_TimeElapsed()
 
 void ASCharacter::Teleport()
 {
-	PlayAnimMontage(AttackMove);
+	StartAttackEffect();
 
 	GetWorldTimerManager().SetTimer(TimerHanlde_Teleport, this, &ASCharacter::Teleport_TimeElapsed, 0.2f);
 }
@@ -174,6 +179,14 @@ void ASCharacter::Teleport()
 void ASCharacter::Teleport_TimeElapsed()
 {
 	SpawnProjectile(TeleportClass);
+}
+
+void ASCharacter::StartAttackEffect()
+{
+	PlayAnimMontage(AttackAnim);
+
+	UGameplayStatics::SpawnEmitterAttached(CastingEffect, GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator,
+		EAttachLocation::SnapToTarget);
 }
 
 void ASCharacter::Tick(float DeltaTime)
@@ -186,7 +199,7 @@ void ASCharacter::SpawnProjectile(const TSubclassOf<AActor>& ClassToSpawn)
 {
 	if (ensureAlways(ClassToSpawn))
 	{
-		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+		FVector HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -229,26 +242,26 @@ void ASCharacter::SpawnProjectile(const TSubclassOf<AActor>& ClassToSpawn)
 
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	// Nerfs - dmg etc
+	// Nerf - damage etc
 	if (Delta < 0.0f)
 	{
-		UMeshComponent* MeshComp = Cast<UMeshComponent>(GetComponentByClass(UMeshComponent::StaticClass()));
-		MeshComp->SetScalarParameterValueOnMaterials("TimeHit", GetWorld()->TimeSeconds);
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 
 		FVector RedColor = FVector(255, 0, 0);
-		MeshComp->SetVectorParameterValueOnMaterials("HitColor", RedColor);
+		GetMesh()->SetVectorParameterValueOnMaterials("HitColor", RedColor);
 	}
-	// Bufs - heal etc
+	// Buffs - heal etc
 	else
 	{
 		UMeshComponent* MeshComp = Cast<UMeshComponent>(GetComponentByClass(UMeshComponent::StaticClass()));
-		MeshComp->SetScalarParameterValueOnMaterials("TimeHit", GetWorld()->TimeSeconds);
+		MeshComp->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 
 		FVector GreenColor = FVector(0, 255, 0);
 		MeshComp->SetVectorParameterValueOnMaterials("HitColor", GreenColor);
 
 	}
 
+	// Player Is Dead Stop Moving
 	if (NewHealth <= 0.0f && Delta < 0.0f)
 	{
 		APlayerController* PC = Cast<APlayerController>(GetController());

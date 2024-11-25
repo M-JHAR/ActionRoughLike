@@ -18,7 +18,7 @@ ASPowerUpBase::ASPowerUpBase()
 }
 void ASPowerUpBase::Interact_Implementation(APawn* InstigatorPawn)
 {
-	// logic in derivved classes
+	// logic in derived classes
 }
 
 void ASPowerUpBase::ShowPowerUp()
@@ -30,6 +30,7 @@ void ASPowerUpBase::HideAndCooldownPowerUp()
 {
 	SetPowerUpState(false);
 
+	FTimerHandle TimerHande_RespawnTimer;
 	GetWorldTimerManager().SetTimer(TimerHande_RespawnTimer, this, &ASPowerUpBase::ShowPowerUp, RespawnTime);
 }
 

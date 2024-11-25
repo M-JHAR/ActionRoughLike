@@ -21,19 +21,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float DamageAmount = 20.0f;
 
-	UPROPERTY(EditAnywhere,Category = "Shake")
-	TSubclassOf<UCameraShakeBase> CameraShakeClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
-	UParticleSystem* MuzzleFlashVFX;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Sounds")
-	UAudioComponent* AudioComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-	USoundBase* ImpactSound;
-
-
 	UFUNCTION()
 	void OnActorOvlerlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

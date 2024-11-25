@@ -25,6 +25,12 @@ class ACTIONROUGHLIKE_API ASCharacter : public ACharacter
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	FName TimeToHitParamName;
+
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	FName HandSocketName;
+
 	UPROPERTY(EditAnywhere, Category = Attack)
 	TSubclassOf<AActor> ProjectileClass;
 
@@ -35,7 +41,7 @@ protected:
 	TSubclassOf<AActor> TeleportClass;
 
 	UPROPERTY(EditAnywhere, Category = Attack)
-	UAnimMontage* AttackMove;
+	UAnimMontage* AttackAnim;
 
 	FTimerHandle TimerHanlde_PrimaryAttack;
 
@@ -43,9 +49,8 @@ protected:
 
 	FTimerHandle TimerHanlde_Teleport;
 
-public:
-	// Sets default values for this character's properties
-	ASCharacter();
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	float AttackAnimDelay;
 
 protected:
 
@@ -77,17 +82,20 @@ protected:
 	UInputAction* InteractAction;
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Component")
 	USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Component")
 	UCameraComponent* CameraComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Component")
 	USInteractionComponent* InteractionComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	USAttributeComponent* AttributeComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UParticleSystem* CastingEffect;
 
 	void MoveForward(const FInputActionValue& Value);
 
@@ -95,8 +103,9 @@ protected:
 
 	void Look(const FInputActionValue& Value);
 
-	void PrimaryAttack();
+	void Jump();
 
+	void PrimaryAttack();
 
 	void PrimaryAttack_TimeElapsed();
 
@@ -112,20 +121,22 @@ protected:
 
 	void SpawnProjectile(const TSubclassOf<AActor>& ToSpawnClass);
 
-	void Jump();
+
+	virtual void BeginPlay() override;
+
+	void StartAttackEffect();
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
-	virtual void BeginPlay() override;
-
 	virtual void PostInitializeComponents() override;
 
 public:
-	// Called every frame
+
+	ASCharacter();
+
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

@@ -20,19 +20,19 @@ ASHealthPotionPowerUp::ASHealthPotionPowerUp()
 
 void ASHealthPotionPowerUp::Interact_Implementation(APawn* InstigatorPawn)
 {
-	if (ensure(InstigatorPawn))
-	{
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
+	if (!ensure(InstigatorPawn)) return;
 
-		if (ensure(AttributeComp) && !AttributeComp->IsMaxHealth())
+	USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
+
+	if (ensure(AttributeComp) && !AttributeComp->IsMaxHealth())
+	{
+
+		if (AttributeComp->ApplyHealthChange(HealAmount))
 		{
-			
-			if (AttributeComp->ApplyHealthChange(HealAmount))
-			{
-				HideAndCooldownPowerUp();
-			}
+			HideAndCooldownPowerUp();
 		}
 	}
+
 }
 
 
