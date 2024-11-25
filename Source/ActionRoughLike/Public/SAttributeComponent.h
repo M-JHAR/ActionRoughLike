@@ -39,6 +39,8 @@ public:
 
 	float GetHealh() const;
 
+	float GetMaxHealh() const;
+
 	bool IsMaxHealth() const;
 
 

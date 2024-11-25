@@ -32,6 +32,11 @@ float USAttributeComponent::GetHealh() const
 	return Health;
 }
 
+float USAttributeComponent::GetMaxHealh() const
+{
+	return MaxHealth;
+}
+
 bool USAttributeComponent::IsMaxHealth() const
 {
 	return Health == MaxHealth;

@@ -64,10 +64,14 @@ void ASMagicProjectile::OnActorOvlerlap(UPrimitiveComponent* OverlappedComponent
 		if (AttributeComp)
 		{
 			AttributeComp->ApplyHealthChange(-DamageAmount);
+
+			UE_LOG(LogTemp, Warning, TEXT("Is Hit"));
+
 			Destroy();
 		}
 
 	}
+	//if(GetInstigator())
 
 
 }
