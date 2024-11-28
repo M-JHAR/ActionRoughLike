@@ -17,9 +17,16 @@ class ACTIONROUGHLIKE_API USBTTask_RangeAttack : public UBTTaskNode
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 protected:
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float MaxProjOffset;
 	
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TSubclassOf<AActor> ProjectileClass;
+
+public:
+
+	USBTTask_RangeAttack();
 
 
 };

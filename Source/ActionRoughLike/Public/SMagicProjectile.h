@@ -19,15 +19,10 @@ class ACTIONROUGHLIKE_API ASMagicProjectile : public ASProjectile
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
-	float DamageAmount = 20.0f;
+	float DamageAmount;
 
 	UFUNCTION()
 	void OnActorOvlerlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-
-	virtual void Explode_Implementation() override;
-
-	virtual void BeginPlay() override;
 
 public:
 

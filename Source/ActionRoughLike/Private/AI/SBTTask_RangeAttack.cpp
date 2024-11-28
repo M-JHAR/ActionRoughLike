@@ -5,7 +5,12 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 #include "GameFramework/Character.h"
+#include "SAttributeComponent.h"
 
+USBTTask_RangeAttack::USBTTask_RangeAttack()
+{
+	MaxProjOffset = 2.0f;
+}
 EBTNodeResult::Type USBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 
@@ -26,8 +31,17 @@ EBTNodeResult::Type USBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 			return EBTNodeResult::Failed;
 		}
 
+		if (USAttributeComponent::IsActorAlive(TagetActor) == false)
+		{
+			return EBTNodeResult::Failed;
+		}
+
 		FVector Direction = TagetActor->GetActorLocation() - MuzzleLocation;
 		FRotator MuzzleRotation = Direction.Rotation();
+
+		MuzzleRotation.Pitch += FMath::RandRange(0.0f, MaxProjOffset);
+		MuzzleRotation.Yaw += FMath::RandRange(-MaxProjOffset, MaxProjOffset);
+
 
 		FActorSpawnParameters Params;
 		Params.Instigator = MyPawn;
@@ -40,3 +54,5 @@ EBTNodeResult::Type USBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	return EBTNodeResult::Failed;
 }
+
+

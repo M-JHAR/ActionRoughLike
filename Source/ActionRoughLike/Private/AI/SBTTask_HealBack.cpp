@@ -27,7 +27,7 @@ EBTNodeResult::Type USBTTask_HealBack::ExecuteTask(UBehaviorTreeComponent& Owner
 
 				if (ensure(AttributeComp))
 				{
-					AttributeComp->ApplyHealthChange(AttributeComp->GetMaxHealh());
+					AttributeComp->ApplyHealthChange(AICharacter, AttributeComp->GetMaxHealh());
 					return EBTNodeResult::Type::Succeeded;
 				}
 			}

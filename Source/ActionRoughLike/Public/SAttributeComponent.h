@@ -27,6 +27,12 @@ public:
 
 	USAttributeComponent();
 
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	static USAttributeComponent* GetAttributes(AActor* FromActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute", meta = (DisplayName = "IsAlive"))
+	static bool IsActorAlive(AActor* Actor);
+
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
 
@@ -34,7 +40,7 @@ public:
 	FOnHealthChanged OnHealthChanged;
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-	bool ApplyHealthChange(float Delta);
+	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
 
 
 	float GetHealh() const;

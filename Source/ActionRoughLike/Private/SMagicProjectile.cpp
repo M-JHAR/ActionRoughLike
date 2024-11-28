@@ -15,20 +15,14 @@
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
 {
-	MovementComp->InitialSpeed = 2000.0f;
+	//MovementComp->InitialSpeed = 2000.0f;
 
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnActorOvlerlap);
-}
+	
+	InitialLifeSpan = 10.0f;
 
-void ASMagicProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-}
+	DamageAmount = 20.0f;
 
-// Execute OnActorHit 
-void ASMagicProjectile::Explode_Implementation()
-{
-	Super::Explode_Implementation();
 }
 
 void ASMagicProjectile::OnActorOvlerlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -36,21 +30,20 @@ void ASMagicProjectile::OnActorOvlerlap(UPrimitiveComponent* OverlappedComponent
 	if (OtherActor && GetInstigator() != OtherActor)
 	{
 		// Now AI cannot Damage Another AI
-		if (GetInstigator()->GetClass() == OtherActor->GetClass()) return;
+		//if (GetInstigator()->GetClass() == OtherActor->GetClass()) return;
 
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 
 		if (AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-DamageAmount);
+			AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount);
 
 			UE_LOG(LogTemp, Warning, TEXT("Is Hit"));
 
-			Super::Explode_Implementation();
-			//Destroy();
+			Explode();
 		}
 
-		
+
 	}
 
 }

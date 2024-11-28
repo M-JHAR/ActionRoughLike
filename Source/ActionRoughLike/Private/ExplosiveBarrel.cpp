@@ -9,7 +9,7 @@
 // Sets default values
 AExplosiveBarrel::AExplosiveBarrel()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComp");
 	StaticMeshComp->SetupAttachment(RootComponent);
@@ -22,14 +22,14 @@ AExplosiveBarrel::AExplosiveBarrel()
 	RadialForceComp->ImpulseStrength = 2000.0f;
 	RadialForceComp->bImpulseVelChange = true;
 
-	
+
 }
 
 // Called when the game starts or when spawned
 void AExplosiveBarrel::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void AExplosiveBarrel::PostInitializeComponents()
@@ -47,7 +47,7 @@ void AExplosiveBarrel::StartExplosive(UPrimitiveComponent* HitComponent, AActor*
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if (AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-50.0f);
+			AttributeComp->ApplyHealthChange(this, -50.0f);
 			RadialForceComp->FireImpulse();
 		}
 
@@ -57,7 +57,7 @@ void AExplosiveBarrel::StartExplosive(UPrimitiveComponent* HitComponent, AActor*
 			RadialForceComp->FireImpulse();
 		}
 	}
-	
+
 }
 
 // Called every frame

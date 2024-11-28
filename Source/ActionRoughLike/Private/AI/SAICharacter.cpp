@@ -8,6 +8,7 @@
 #include "DrawDebugHelpers.h"
 #include "SAttributeComponent.h"
 #include "BrainComponent.h"
+#include "SWorldUserWidget.h"
 
 ASAICharacter::ASAICharacter()
 {
@@ -17,6 +18,8 @@ ASAICharacter::ASAICharacter()
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	TimeToHitParamName = "TimeHit";
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -30,15 +33,7 @@ void ASAICharacter::PostInitializeComponents()
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	AAIController* AIC = Cast<AAIController>(GetController());
-	if (AIC)
-	{
-		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
-
-		BBComp->SetValueAsObject("TargetActor", Pawn);
-
-		//DrawDebugString(GetWorld(), GetActorLocation(), "PlayerSpoted", nullptr, FColor::White, 4.0f, true);
-	}
+	SetTargetActor(Pawn);
 }
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
@@ -46,6 +41,22 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 
 	if (Delta < 0.0f)
 	{
+		if (InstigatorActor != this)
+		{
+			SetTargetActor(InstigatorActor);
+		}
+
+		if (ActiveHealthBar == nullptr)
+		{
+			ActiveHealthBar = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+			if (ActiveHealthBar)
+			{
+				ActiveHealthBar->AttachedActor = this;
+				ActiveHealthBar->AddToViewport();
+			}
+		}
+
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 
 		// AI is dead
 		if (NewHealth <= 0.0f)
@@ -64,5 +75,14 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			// set lifespan
 			SetLifeSpan(10.0f);
 		}
+	}
+}
+
+void ASAICharacter::SetTargetActor(AActor* NewTarget)
+{
+	AAIController* AIC = Cast<AAIController>(GetController());
+	if (AIC)
+	{
+		AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
 	}
 }
