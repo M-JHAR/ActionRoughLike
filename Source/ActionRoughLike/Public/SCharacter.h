@@ -134,6 +134,8 @@ protected:
 	UFUNCTION(Exec)
 	void HealSelf(float AmountToHeal = 100.0f);
 
+	virtual FVector GetPawnViewLocation() const override;
+
 public:
 
 	ASCharacter();

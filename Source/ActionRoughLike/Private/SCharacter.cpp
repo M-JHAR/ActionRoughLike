@@ -273,3 +273,8 @@ void ASCharacter::HealSelf(float AmountToHeal /*100.0f*/)
 {
 	AttributeComp->ApplyHealthChange(this, AmountToHeal);
 }
+
+FVector ASCharacter::GetPawnViewLocation() const
+{
+	return CameraComp->GetComponentLocation();
+}

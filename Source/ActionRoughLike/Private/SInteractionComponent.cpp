@@ -5,6 +5,8 @@
 #include "SGameplayInterface.h"
 #include "DrawDebugHelpers.h"
 
+static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("su.InteractionDebugDraw"), false, TEXT("Enable Debug Lines for Interact Component."), ECVF_Cheat);
+
 // Sets default values for this component's properties
 USInteractionComponent::USInteractionComponent()
 {
@@ -23,6 +25,8 @@ void USInteractionComponent::BeginPlay()
 
 void USInteractionComponent::PrimaryInteract()
 {
+	bool bDrawDebug = CVarDebugDrawInteraction.GetValueOnGameThread();
+
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
@@ -30,7 +34,6 @@ void USInteractionComponent::PrimaryInteract()
 
 	FVector EyeLocation;
 	FRotator EyeRotation;
-
 	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 	FVector End = EyeLocation + (EyeRotation.Vector() * 1000.0f);
@@ -39,7 +42,7 @@ void USInteractionComponent::PrimaryInteract()
 	//bool bHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
 
 	TArray<FHitResult> Hits;
-	
+
 	float Radius = 50.0f;
 
 	FCollisionShape Shape;
@@ -48,9 +51,15 @@ void USInteractionComponent::PrimaryInteract()
 	bool bHit = GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
 
 	FColor LineColor = bHit ? FColor::Green : FColor::Red;
-	
+
 	for (const FHitResult& Hit : Hits)
 	{
+		if (bDrawDebug)
+		{
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f, 0, 4.0f);
+		}
+		//DrawDebugSphere(GetWorld(), Hit.Location, Radius, 32, FColor::Yellow, false, 2.0f, 0, 4.0f);
+
 		if (AActor* HitActor = Hit.GetActor())
 		{
 			if (HitActor->Implements<USGameplayInterface>())
@@ -62,13 +71,12 @@ void USInteractionComponent::PrimaryInteract()
 			}
 		}
 
-		//DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f, 0, 4.0f);
-		//DrawDebugSphere(GetWorld(), Hit.Location, Radius, 32, FColor::Yellow, false, 2.0f, 0, 4.0f);
-		
 	}
-	
-	
-	//DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 4.0f);
+
+	if (bDrawDebug)
+	{
+		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 4.0f);
+	}
 }
 
 

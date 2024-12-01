@@ -10,6 +10,7 @@
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "SGameplayFunctionLibrary.h"
 
 
 // Sets default values
@@ -32,14 +33,19 @@ void ASMagicProjectile::OnActorOvlerlap(UPrimitiveComponent* OverlappedComponent
 		// Now AI cannot Damage Another AI
 		//if (GetInstigator()->GetClass() == OtherActor->GetClass()) return;
 
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		//USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 
-		if (AttributeComp)
+		//if (AttributeComp)
+		//{
+		//	AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount);
+
+		//	//UE_LOG(LogTemp, Warning, TEXT("Is Hit"));
+
+		//	Explode();
+		//}
+
+		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		{
-			AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount);
-
-			UE_LOG(LogTemp, Warning, TEXT("Is Hit"));
-
 			Explode();
 		}
 
