@@ -5,6 +5,7 @@
 #include "SAttributeComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "SPlayerState.h"
 
 ASHealthPotionPowerUp::ASHealthPotionPowerUp()
 {
@@ -22,9 +23,11 @@ void ASHealthPotionPowerUp::Interact_Implementation(APawn* InstigatorPawn)
 {
 	if (!ensure(InstigatorPawn)) return;
 
-	USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
+	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(InstigatorPawn);
 
-	if (ensure(AttributeComp) && !AttributeComp->IsMaxHealth())
+	ASPlayerState* PlayerState = InstigatorPawn->GetPlayerState<ASPlayerState>();
+
+	if (ensure(AttributeComp) && !AttributeComp->IsMaxHealth() && PlayerState->CostCredit(CreditAmount))
 	{
 
 		if (AttributeComp->ApplyHealthChange(this, HealAmount))

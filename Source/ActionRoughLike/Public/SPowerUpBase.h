@@ -19,6 +19,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Powerup");
 	float RespawnTime;
+
+	UPROPERTY(EditAnywhere, Category = "PowerUp")
+	float CreditAmount;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USphereComponent* SphereComp;

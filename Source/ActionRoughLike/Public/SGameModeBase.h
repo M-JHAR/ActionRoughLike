@@ -27,10 +27,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<AActor> MinionClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	TArray<TSubclassOf<AActor>> PowerupClass;
+
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UEnvQuery* SpawnBotQuery;
 
+	UPROPERTY(EditDefaultsOnly, Category ="Powerup")
+	UEnvQuery* SpawnPowerupQuery;
+
 	FTimerHandle TimerHandle_SpawnBots;
+
+	FTimerHandle TimerHandle_SpawnPowerups;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float SpawnTimerInterval;
@@ -39,7 +47,14 @@ protected:
 	void SpawnBotTimerElapsed();
 
 	UFUNCTION()
-	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	void SpawnPowerupTimerElapsed();
+
+	UFUNCTION()
+	void OnQueryCompleted_SpawnBots(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	UFUNCTION()
+	void OnQueryCompleted_SpawnPowerup(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
 
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);

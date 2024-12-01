@@ -15,6 +15,8 @@ ASPowerUpBase::ASPowerUpBase()
 
 	RespawnTime = 10.0f;
 
+	CreditAmount = 1.0f;
+
 }
 void ASPowerUpBase::Interact_Implementation(APawn* InstigatorPawn)
 {
