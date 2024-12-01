@@ -50,4 +50,8 @@ public:
 	bool IsMaxHealth() const;
 
 
+	UFUNCTION(BlueprintCallable)
+	bool Kill(AActor* InstigatorActor);
+
+
 };

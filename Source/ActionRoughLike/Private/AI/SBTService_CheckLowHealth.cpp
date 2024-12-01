@@ -8,6 +8,11 @@
 #include "SAttributeComponent.h"
 
 
+USBTService_CheckLowHealth::USBTService_CheckLowHealth()
+{
+	LowHealthFraction = 0.4f;
+}
+
 void USBTService_CheckLowHealth::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
@@ -27,7 +32,7 @@ void USBTService_CheckLowHealth::TickNode(UBehaviorTreeComponent& OwnerComp, uin
 				
 				if (ensure(AttributeComp))
 				{
-					bIsLowHealth = (AttributeComp->GetHealh() <= 40.0f);
+					bool bIsLowHealth = (AttributeComp->GetHealh() / AttributeComp->GetMaxHealh()) < LowHealthFraction;
 					BBC->SetValueAsBool(LowHealthKey.SelectedKeyName, bIsLowHealth);
 				}	
 			}

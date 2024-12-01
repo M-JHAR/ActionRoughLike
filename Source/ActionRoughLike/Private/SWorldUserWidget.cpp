@@ -10,12 +10,12 @@ void USWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-
 	if (!IsValid(AttachedActor))
 	{
-		RemoveFromParent();
+		RemoveFromParent(); // @fixme : doesnt working properly
 
 		UE_LOG(LogTemp, Warning, TEXT("Enemy UI has Benn REMOVED!!"));
+		return;
 	}
 
 	FVector2D ScreenPosition;

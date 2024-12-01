@@ -131,6 +131,9 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
+	UFUNCTION(Exec)
+	void HealSelf(float AmountToHeal = 100.0f);
+
 public:
 
 	ASCharacter();

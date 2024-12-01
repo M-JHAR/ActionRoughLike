@@ -16,10 +16,14 @@ class ACTIONROUGHLIKE_API USBTService_CheckLowHealth : public UBTService
 	
 protected:
 
-	bool bIsLowHealth = false;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float LowHealthFraction = false;
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	FBlackboardKeySelector LowHealthKey;
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
+public:
+	USBTService_CheckLowHealth();
 };
