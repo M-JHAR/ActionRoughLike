@@ -16,7 +16,7 @@ class USInteractionComponent;
 class UAnimMontage;
 class UParticleSystem;
 class USAttributeComponent;
-
+class USActionComponent;
 
 UCLASS()
 class ACTIONROUGHLIKE_API ASCharacter : public ACharacter
@@ -27,30 +27,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Effects")
 	FName TimeToHitParamName;
-
-	UPROPERTY(VisibleAnywhere, Category = "Effects")
-	FName HandSocketName;
-
-	UPROPERTY(EditAnywhere, Category = Attack)
-	TSubclassOf<AActor> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = Attack)
-	TSubclassOf<AActor> BlackholeClass;
-
-	UPROPERTY(EditAnywhere, Category = Attack)
-	TSubclassOf<AActor> TeleportClass;
-
-	UPROPERTY(EditAnywhere, Category = Attack)
-	UAnimMontage* AttackAnim;
-
-	FTimerHandle TimerHanlde_PrimaryAttack;
-
-	FTimerHandle TimerHanlde_BlackholeAttack;
-
-	FTimerHandle TimerHanlde_Teleport;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Attack")
-	float AttackAnimDelay;
 
 protected:
 
@@ -81,6 +57,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* InteractAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* SprintStartAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* SprintStopAction;
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	USpringArmComponent* SpringArmComp;
@@ -94,8 +76,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	USAttributeComponent* AttributeComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	UParticleSystem* CastingEffect;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	USActionComponent* ActionComp;
 
 	void MoveForward(const FInputActionValue& Value);
 
@@ -105,26 +87,19 @@ protected:
 
 	void Jump();
 
-	void PrimaryAttack();
+	void SprintStart();
 
-	void PrimaryAttack_TimeElapsed();
+	void SprintStop();
+
+	void PrimaryAttack();
 
 	void BlackholeAttack();
 
-	void BlackholeAttack_TimeElapsed();
-
 	void Teleport();
-
-	void Teleport_TimeElapsed();
 
 	void PrimaryInteract();
 
-	void SpawnProjectile(const TSubclassOf<AActor>& ToSpawnClass);
-
-
 	virtual void BeginPlay() override;
-
-	void StartAttackEffect();
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
