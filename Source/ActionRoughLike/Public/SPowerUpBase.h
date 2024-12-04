@@ -9,6 +9,7 @@
 
 
 class USphereComponent;
+class UStaticMeshComponent;
 
 UCLASS(ABSTRACT)
 class ACTIONROUGHLIKE_API ASPowerUpBase : public AActor, public ISGameplayInterface
@@ -19,12 +20,12 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Powerup");
 	float RespawnTime;
-
-	UPROPERTY(EditAnywhere, Category = "PowerUp")
-	float CreditAmount;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USphereComponent* SphereComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UStaticMeshComponent* MeshComp;
 
 	UFUNCTION()
 	void ShowPowerUp();

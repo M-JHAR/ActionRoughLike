@@ -5,37 +5,43 @@
 
 ASPlayerState::ASPlayerState()
 {
-	TotalCredits = 0.0f;
+	Credits = 0;
 }
 
-bool ASPlayerState::GrantCredit(float Amount)
+void ASPlayerState::AddCredits(int32 Delta)
 {
-	TotalCredits += Amount;
+	if (!ensure(Delta > 0))
+	{
+		return;
+	}
+	Credits += Delta;
 
-	OnCreditChange.Broadcast(TotalCredits, Amount);
+	OnCreditsChange.Broadcast(this, Credits, Delta);
+}
+
+bool ASPlayerState::RemoveCredits(int32 Delta)
+{
+	if (!ensure(Delta > 0))
+	{
+		return false;
+	}
+
+	if (Credits < Delta)
+	{
+		return false;
+	}
+
+	Credits -= Delta;
+
+	OnCreditsChange.Broadcast(this, Credits, -Delta);
+
 	return true;
 }
 
-bool ASPlayerState::CostCredit(float Amount)
+int32 ASPlayerState::GetCredits() const
 {
-	bool bResult = CanCostCredit(Amount);
-	if (bResult)
-	{
-		TotalCredits -= Amount;
-
-		OnCreditChange.Broadcast(TotalCredits, Amount);
-	}
-	return bResult;
+	return Credits;
 }
 
-float ASPlayerState::GetCredit() const
-{
-	return TotalCredits;
-}
 
-bool ASPlayerState::CanCostCredit(float AmountToCost) const
-{
-	return FMath::IsNearlyEqual(TotalCredits, AmountToCost) || (TotalCredits > AmountToCost);
-
-}
 

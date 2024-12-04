@@ -11,11 +11,7 @@ ASHealthPotionPowerUp::ASHealthPotionPowerUp()
 {
 	HealAmount = 20.0f;
 
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-
-	// we use sphere collision to handle interactive queries
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetupAttachment(RootComponent);
+	CreditCost = 50;
 }
 
 
@@ -25,15 +21,20 @@ void ASHealthPotionPowerUp::Interact_Implementation(APawn* InstigatorPawn)
 
 	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(InstigatorPawn);
 
-	ASPlayerState* PlayerState = InstigatorPawn->GetPlayerState<ASPlayerState>();
 
-	if (ensure(AttributeComp) && !AttributeComp->IsMaxHealth() && PlayerState->CostCredit(CreditAmount))
+
+	if (ensure(AttributeComp) && !AttributeComp->IsMaxHealth())
 	{
-
-		if (AttributeComp->ApplyHealthChange(this, HealAmount))
+		if (ASPlayerState* PS = InstigatorPawn->GetPlayerState<ASPlayerState>())
 		{
-			HideAndCooldownPowerUp();
+
+			if (PS->RemoveCredits(CreditCost) && AttributeComp->ApplyHealthChange(this, HealAmount))
+			{
+				HideAndCooldownPowerUp();
+			}
 		}
+
+
 	}
 
 }

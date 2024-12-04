@@ -89,6 +89,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ASCharacter::PrimaryInteract);
 
+		EnhancedInputComponent->BindAction(ParryAction, ETriggerEvent::Triggered, this, &ASCharacter::Parry);
+
 	}
 }
 
@@ -158,9 +160,14 @@ void ASCharacter::PrimaryInteract()
 		InteractionComp->PrimaryInteract();
 }
 
+void ASCharacter::Parry()
+{
+	ActionComp->StartActionByName(this, "Parry");
+}
+
 void ASCharacter::PrimaryAttack()
 {
-	ActionComp->StartActionByName(this,"PrimaryAttack");
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
 

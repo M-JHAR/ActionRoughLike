@@ -7,25 +7,26 @@
 
 static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("su.InteractionDebugDraw"), false, TEXT("Enable Debug Lines for Interact Component."), ECVF_Cheat);
 
-// Sets default values for this component's properties
 USInteractionComponent::USInteractionComponent()
 {
-
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
-// Called when the game starts
 void USInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-
 }
+
+void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
 
 void USInteractionComponent::PrimaryInteract()
 {
 	bool bDrawDebug = CVarDebugDrawInteraction.GetValueOnGameThread();
+
 
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
@@ -37,9 +38,6 @@ void USInteractionComponent::PrimaryInteract()
 	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 	FVector End = EyeLocation + (EyeRotation.Vector() * 1000.0f);
-
-	//FHitResult Hit;
-	//bool bHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
 
 	TArray<FHitResult> Hits;
 

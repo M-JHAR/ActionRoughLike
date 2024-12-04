@@ -15,11 +15,11 @@ class ACTIONROUGHLIKE_API ASHealthPotionPowerUp : public ASPowerUpBase
 	
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "PowerUp")
+	UPROPERTY(EditAnywhere, Category = "HealthPotion")
 	float HealAmount;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UStaticMeshComponent* MeshComp;
+	UPROPERTY(EditAnywhere, Category = "HealthPotion")
+	int32 CreditCost;
 
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 

@@ -3,6 +3,7 @@
 
 #include "SPowerUpBase.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 
 // Sets default values
@@ -13,11 +14,14 @@ ASPowerUpBase::ASPowerUpBase()
 	SphereComp->SetCollisionProfileName("Powerup");
 	RootComponent = SphereComp;
 
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MeshComp->SetupAttachment(RootComponent);
+
+
 	RespawnTime = 10.0f;
-
-	CreditAmount = 1.0f;
-
 }
+
 void ASPowerUpBase::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// logic in derived classes

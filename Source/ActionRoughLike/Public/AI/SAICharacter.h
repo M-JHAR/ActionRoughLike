@@ -10,6 +10,7 @@ class UPawnSensingComponent;
 class USAttributeComponent;
 class UUserWidget;
 class USWorldUserWidget;
+class USActionComponent;
 
 UCLASS()
 class ACTIONROUGHLIKE_API ASAICharacter : public ACharacter
@@ -31,6 +32,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USAttributeComponent* AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USActionComponent* ActionComp;
+
 
 	virtual void PostInitializeComponents() override;
 

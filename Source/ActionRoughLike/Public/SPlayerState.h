@@ -7,37 +7,34 @@
 #include "SPlayerState.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCreditChange, float, TotalCredits, float, Amount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChange, ASPlayerState*, PlayerState, float, NewCredit, float, Delta);
 /**
- * 
+ *
  */
 UCLASS()
 class ACTIONROUGHLIKE_API ASPlayerState : public APlayerState
 {
 	GENERATED_BODY()
-	
+
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerState")
-	float TotalCredits;
+	UPROPERTY(EditDefaultsOnly, Category = "Credits")
+	int32 Credits;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnCreditChange OnCreditChange;
-
-	bool CanCostCredit(float AmountToCost) const;
 public:
 
 	ASPlayerState();
 
-	UFUNCTION(BlueprintCallable, Category = "PlayerState")
-	bool GrantCredit(float Amount);
+	UFUNCTION(BlueprintCallable, Category = "Credits")
+	void AddCredits(int32 Delta);
 
-	UFUNCTION(BlueprintCallable, Category = "PlayerState")
-	bool CostCredit(float Amount);
-	
-	UFUNCTION(BlueprintCallable, Category = "PlayerState")
-	float GetCredit() const;
-	
+	UFUNCTION(BlueprintCallable, Category = "Credits")
+	bool RemoveCredits(int32 Delta);
 
-	
+	UFUNCTION(BlueprintCallable, Category = "Credits")
+	int32 GetCredits() const;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnCreditsChange OnCreditsChange;
+
 };

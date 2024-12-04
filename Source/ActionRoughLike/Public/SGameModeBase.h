@@ -12,7 +12,7 @@ class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
 
 /**
- * 
+ *
  */
 UCLASS()
 class ACTIONROUGHLIKE_API ASGameModeBase : public AGameModeBase
@@ -21,20 +21,30 @@ class ACTIONROUGHLIKE_API ASGameModeBase : public AGameModeBase
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+	int32 CreditsPerKill;
+
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* DifficultyCurve;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<AActor> MinionClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
-	TArray<TSubclassOf<AActor>> PowerupClass;
-
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UEnvQuery* SpawnBotQuery;
 
-	UPROPERTY(EditDefaultsOnly, Category ="Powerup")
-	UEnvQuery* SpawnPowerupQuery;
+	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	TArray<TSubclassOf<AActor>> PowerupClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	int32 DesiredPowerupCount;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	float RequiredPowerupDistance;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	UEnvQuery* PowerupSpawnQuery;
 
 	FTimerHandle TimerHandle_SpawnBots;
 
@@ -47,13 +57,10 @@ protected:
 	void SpawnBotTimerElapsed();
 
 	UFUNCTION()
-	void SpawnPowerupTimerElapsed();
+	void OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
 	UFUNCTION()
-	void OnQueryCompleted_SpawnBots(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
-
-	UFUNCTION()
-	void OnQueryCompleted_SpawnPowerup(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	void OnPowerupSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
 
 	UFUNCTION()
@@ -66,7 +73,7 @@ public:
 	ASGameModeBase();
 
 	virtual void StartPlay() override;
-	
+
 	UFUNCTION(Exec)
 	void KillAll();
 };

@@ -17,7 +17,8 @@ public class ActionRoughLike : ModuleRules
             "EnhancedInput",
             "GamePlayTasks",
             "AIModule",
-            "UMG"
+            "UMG",
+            "GameplayTags"
 
         });
 

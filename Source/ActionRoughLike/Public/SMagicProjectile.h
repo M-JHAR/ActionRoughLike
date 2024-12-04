@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SProjectile.h"
+#include "GameplayTagContainer.h"
 #include "SMagicProjectile.generated.h"
 
 class UAudioComponent;
@@ -18,7 +19,10 @@ class ACTIONROUGHLIKE_API ASMagicProjectile : public ASProjectile
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FGameplayTag ParryTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float DamageAmount;
 
 	UFUNCTION()

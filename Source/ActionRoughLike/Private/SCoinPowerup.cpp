@@ -7,21 +7,19 @@
 
 ASCoinPowerup::ASCoinPowerup()
 {
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetupAttachment(RootComponent);
-
+	CreditsAmount = 80;
 }
 
 void ASCoinPowerup::Interact_Implementation(APawn* InstigatorPawn)
 {
-	if (!ensure(InstigatorPawn)) return;
-
-	ASPlayerState* PlayerState = InstigatorPawn->GetPlayerState<ASPlayerState>();
-
-	if (ensure(PlayerState))
+	if (!ensure(InstigatorPawn))
 	{
-		PlayerState->GrantCredit(CreditAmount);
+		return;
+	}
+
+	if (ASPlayerState* PlayerState = InstigatorPawn->GetPlayerState<ASPlayerState>())
+	{
+		PlayerState->AddCredits(CreditsAmount);
 
 		HideAndCooldownPowerUp();
 	}

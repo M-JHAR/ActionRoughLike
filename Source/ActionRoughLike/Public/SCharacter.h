@@ -63,6 +63,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* SprintStopAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* ParryAction;
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	USpringArmComponent* SpringArmComp;
@@ -98,6 +101,8 @@ protected:
 	void Teleport();
 
 	void PrimaryInteract();
+
+	void Parry();
 
 	virtual void BeginPlay() override;
 

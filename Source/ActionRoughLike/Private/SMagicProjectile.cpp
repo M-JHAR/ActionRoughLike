@@ -11,7 +11,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "SGameplayFunctionLibrary.h"
-
+#include "SActionComponent.h"
+#include "GameplayTagContainer.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
@@ -33,16 +35,16 @@ void ASMagicProjectile::OnActorOvlerlap(UPrimitiveComponent* OverlappedComponent
 		// Now AI cannot Damage Another AI
 		//if (GetInstigator()->GetClass() == OtherActor->GetClass()) return;
 
-		//USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 
-		//if (AttributeComp)
-		//{
-		//	AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount);
+		USActionComponent* ActionComp = OtherActor->GetComponentByClass<USActionComponent>();
 
-		//	//UE_LOG(LogTemp, Warning, TEXT("Is Hit"));
+		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
+		{
+			MovementComp->Velocity = -MovementComp->Velocity;
 
-		//	Explode();
-		//}
+			SetInstigator(Cast<APawn>(OtherActor));
+			return;
+		}
 
 		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		{
