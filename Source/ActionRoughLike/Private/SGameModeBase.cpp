@@ -10,6 +10,7 @@
 #include "SCharacter.h"
 #include "SPlayerState.h"
 #include "SPowerUpBase.h"
+#include "SInteractionComponent.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
 
@@ -187,6 +188,15 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 
 		float RespawnDelay = 2.0f;
 		GetWorldTimerManager().SetTimer(TimerHande_RespawnDelay, Delegate, RespawnDelay, false);
+
+		USInteractionComponent* InteractionComp = Player->GetComponentByClass<USInteractionComponent>();
+		if (ensure(InteractionComp) && InteractionComp->RemoveInteractionWidget())
+		{
+			FString DebugMsg = TEXT("DefaultWidget Has Been Deleted, GameModeBase::OnActorKillied");
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, DebugMsg);
+		}
+
+
 	}
 
 	APawn* KillerPawn = Cast<APawn>(Killer);
