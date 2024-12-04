@@ -14,6 +14,7 @@
 #include "SActionComponent.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "SActionEffect.h"
 
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
@@ -21,7 +22,7 @@ ASMagicProjectile::ASMagicProjectile()
 	//MovementComp->InitialSpeed = 2000.0f;
 
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnActorOvlerlap);
-	
+
 	InitialLifeSpan = 10.0f;
 
 	DamageAmount = 20.0f;
@@ -49,6 +50,12 @@ void ASMagicProjectile::OnActorOvlerlap(UPrimitiveComponent* OverlappedComponent
 		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		{
 			Explode();
+
+			if (ActionComp)
+			{
+				ActionComp->AddAction(GetInstigator(), BurningActionClass);
+			}
+
 		}
 
 

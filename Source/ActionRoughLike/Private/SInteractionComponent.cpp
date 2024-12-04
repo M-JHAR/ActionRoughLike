@@ -17,10 +17,18 @@ void USInteractionComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
+
 void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
+
+
+void USInteractionComponent::FindBestInteractable()
+{
+
+}
+
 
 
 void USInteractionComponent::PrimaryInteract()

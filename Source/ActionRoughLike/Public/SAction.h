@@ -19,6 +19,7 @@ class ACTIONROUGHLIKE_API USAction : public UObject
 	
 protected:
 
+	UFUNCTION(BlueprintCallable, Category = "Action")
 	USActionComponent* GetOwningComponent() const;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
@@ -28,7 +29,11 @@ protected:
 	FGameplayTagContainer BlockedTags;
 	
 	bool bIsRunning;
+
 public:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Action")
+	bool bAutoStart;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool IsRunning() const;
