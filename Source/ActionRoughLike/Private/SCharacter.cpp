@@ -193,6 +193,11 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	// Nerf - damage etc
 	if (Delta < 0.0f)
 	{
+		float RageToAdd = Delta * 0.5f;
+		AttributeComp->ApplyRageChange(InstigatorActor, RageToAdd);
+
+		UE_LOG(LogTemp, Log, TEXT("Rage: %f"), AttributeComp->GetRage());
+
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 
 		FVector RedColor = FVector(255, 0, 0);

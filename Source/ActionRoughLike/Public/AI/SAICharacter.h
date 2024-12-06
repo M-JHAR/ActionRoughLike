@@ -18,8 +18,14 @@ class ACTIONROUGHLIKE_API ASAICharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-
+	UPROPERTY()
 	USWorldUserWidget* ActiveHealthBar;
+
+	UPROPERTY()
+	USWorldUserWidget* PlayerSpottedWidgetInstance;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<USWorldUserWidget> PlayerSpottedWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;

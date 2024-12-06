@@ -9,6 +9,7 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, USAttributeComponent*, OwningComp, float, NewHealth, float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRageChanged, AActor*, InstigatorActor, USAttributeComponent*, OwningComp, int32, NewRage, int32, Delta);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ACTIONROUGHLIKE_API USAttributeComponent : public UActorComponent
@@ -22,6 +23,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attribute")
 	float MaxHealth;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attribute")
+	int32 Rage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attribute")
+	int32 MaxRage;
 
 public:
 
@@ -39,9 +46,14 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnRageChanged OnRageChanged;
+
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
 
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	bool ApplyRageChange(AActor* InstigatorActor, int32 Delta);
 
 	float GetHealh() const;
 
@@ -49,6 +61,7 @@ public:
 
 	bool IsMaxHealth() const;
 
+	float GetRage() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool Kill(AActor* InstigatorActor);

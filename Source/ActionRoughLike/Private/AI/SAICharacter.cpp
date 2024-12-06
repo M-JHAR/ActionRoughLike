@@ -24,7 +24,7 @@ ASAICharacter::ASAICharacter()
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic,ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 
@@ -43,6 +43,19 @@ void ASAICharacter::PostInitializeComponents()
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
 	SetTargetActor(Pawn);
+
+	if (PlayerSpottedWidgetInstance == nullptr)
+	{
+		PlayerSpottedWidgetInstance = CreateWidget<USWorldUserWidget>(GetWorld(), PlayerSpottedWidgetClass);
+		if (PlayerSpottedWidgetInstance)
+		{
+			PlayerSpottedWidgetInstance->AttachedActor = this;
+			PlayerSpottedWidgetInstance->AddToViewport();
+
+		}
+
+	}
+
 }
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)

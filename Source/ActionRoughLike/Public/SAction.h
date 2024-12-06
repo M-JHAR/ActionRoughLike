@@ -47,6 +47,8 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent, Category = "Action")
 	void StopAction(AActor* Instigator);
 
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	FName GetActionName() const;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName;

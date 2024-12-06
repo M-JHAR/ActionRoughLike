@@ -65,3 +65,9 @@ bool USAction::IsRunning() const
 {
 	return bIsRunning;
 }
+
+FName USAction::GetActionName() const
+{
+	return ActionName;
+}
+

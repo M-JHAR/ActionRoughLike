@@ -4,6 +4,7 @@
 #include "SAction_ProjectileAttack.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "SAttributeComponent.h"
 
 
 USAction_ProjectileAttack::USAction_ProjectileAttack()

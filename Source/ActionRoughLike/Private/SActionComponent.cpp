@@ -98,3 +98,16 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	return false;
 }
 
+bool USActionComponent::ContainAction(FName ActionName)
+{
+	for (USAction* Action : Actions)
+	{
+		if (Action && Action->ActionName == ActionName)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+

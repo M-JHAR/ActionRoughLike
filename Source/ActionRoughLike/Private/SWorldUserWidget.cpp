@@ -32,6 +32,11 @@ void USWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	}
 
 
-	//if(UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), AttachedActor->GetActorLocation(), ScreenPosition))
-
+	//if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), AttachedActor->GetActorLocation(), ScreenPosition, false))
+	//{
+	//	if (ParentSizeBox)
+	//	{
+	//		ParentSizeBox->SetRenderTranslation(ScreenPosition);
+	//	}
+	//}
 }
